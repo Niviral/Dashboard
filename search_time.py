@@ -67,7 +67,6 @@ def update_graph(dd_menu_value):
                     'yaxis':{
                         'range': [range]
                     }
-                    
                 }
             }
         )
