@@ -36,13 +36,7 @@ app.layout = html.Div(children=[
             value = 'kabel'),
     ],id='dd_div'),
     html.Div(id='search-time-graph-div'),
-    html.Div([
-        dash_table.DataTable(
-            id='hana_raw_data',
-            columns=[{"name": i, "id": i} for i in df.columns],
-            page_size=10
-        )
-    ]),
+    html.Div(id='search-time-dt-div'),
 ])
 
 @app.callback(
@@ -73,12 +67,20 @@ def update_graph(dd_menu_value):
     ]
 
 @app.callback(
-    Output('hana_raw_data','data'),
+    Output('search-time-dt-div','children'),
     [Input('dd_menu', 'value')])
 
 def update_table(dd_menu_value):
-    data = df[df['QUERY_RAW_PHRASE']==dd_menu_value].to_dict('records')
-    return data
+    return [
+        dash_table.DataTable(
+                id='hana_raw_data',
+                data = df[df['QUERY_RAW_PHRASE']==dd_menu_value].to_dict('records'),
+                columns=[{"name": i, "id": i} for i in df.columns],
+                page_size=10,
+                filter_action='native',
+                sort_action="native",
+            )
+    ]
 
 if __name__ == "__main__":
     app.run_server(host='0.0.0.0', port='8000',debug=True)
