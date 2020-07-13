@@ -5,7 +5,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 from flask import Flask
-import json
 
 df = pd.read_csv('hana_search.csv')
 
@@ -35,17 +34,8 @@ app.layout = html.Div(children=[
             options=[
             {'label': unique_phrase, 'value': unique_phrase} for unique_phrase in phrase],
             value = 'kabel'),
-
-        dcc.Graph(
-            id='example-graph',
-        )
-    ],id='graph_div'),
-    # html.Div([
-    #     dcc.Textarea(
-    #         id='text-box',
-    #         value='',
-# )
-    # ]),
+    ],id='dd_div'),
+    html.Div(id='search-time-graph-div'),
     html.Div([
         dash_table.DataTable(
             id='hana_raw_data',
@@ -56,27 +46,32 @@ app.layout = html.Div(children=[
 ])
 
 @app.callback(
-    Output('example-graph','figure'),
+    Output('search-time-graph-div','children'),
     [Input('dd_menu', 'value')])
 
 def update_graph(dd_menu_value):
     ddf = df3[df3['QUERY_RAW_PHRASE']==dd_menu_value]
     range = [ddf['mean_logtime']*1.2,ddf['mean_logtime']*0.75]
 
-    return {
-        'data': [
-            {'x': ddf['DATE'], 'y': ddf['mean_logtime'], 'type': 'line' , 'name': 'Avg'},
-            {'x': ddf['DATE'], 'y': ddf['min_logtime'], 'type': 'line' , 'name': 'Min'},
-            {'x': ddf['DATE'], 'y': ddf['max_logtime'], 'type': 'line' , 'name': 'Max', 'visible': 'legendonly'}
-        ],
-        'layout': {
-            'title': f'Czas wyszukiwania {dd_menu_value}',
-            'yaxis':{
-                'range': [range]
+    return [
+        dcc.Graph(
+            id='search-time-graph',
+            figure={
+                'data': [
+                    {'x': ddf['DATE'], 'y': ddf['mean_logtime'], 'type': 'line' , 'name': 'Avg'},
+                    {'x': ddf['DATE'], 'y': ddf['min_logtime'], 'type': 'line' , 'name': 'Min'},
+                    {'x': ddf['DATE'], 'y': ddf['max_logtime'], 'type': 'line' , 'name': 'Max', 'visible': 'legendonly'}
+                ],
+                'layout': {
+                    'title': f'Czas wyszukiwania {dd_menu_value}',
+                    'yaxis':{
+                        'range': [range]
+                    }
+                    
+                }
             }
-            
-        }
-    }
+        )
+    ]
 
 @app.callback(
     Output('hana_raw_data','data'),
@@ -84,17 +79,7 @@ def update_graph(dd_menu_value):
 
 def update_table(dd_menu_value):
     data = df[df['QUERY_RAW_PHRASE']==dd_menu_value].to_dict('records')
-    # data = dff
     return data
-
-# @app.callback(
-#     Output('hana_raw_data','data'),
-#     [Input('example-graph','hoverData')])
-
-# def filtered_tabel(hoverData):
-#    return json.dumps(hoverData, indent=2)
-     
-
 
 if __name__ == "__main__":
     app.run_server(host='0.0.0.0', port='8000',debug=True)
