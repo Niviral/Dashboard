@@ -36,6 +36,7 @@ app.layout = html.Div(children=[
             value = 'kabel'),
     ],id='dd_div'),
     html.Div(id='search-time-graph-div'),
+    html.Div(id='search-time-date-slider'),
     html.Div(id='search-time-dt-div'),
 ])
 
@@ -45,7 +46,9 @@ app.layout = html.Div(children=[
 
 def update_graph(dd_menu_value):
     ddf = df3[df3['QUERY_RAW_PHRASE']==dd_menu_value]
-    range = [ddf['mean_logtime']*1.2,ddf['mean_logtime']*0.75]
+    yax = [ddf['mean_logtime']*1.2,ddf['mean_logtime']*0.75]
+
+
 
     return [
         dcc.Graph(
@@ -59,7 +62,7 @@ def update_graph(dd_menu_value):
                 'layout': {
                     'title': f'Czas wyszukiwania {dd_menu_value}',
                     'yaxis':{
-                        'range': [range]
+                        'range': [yax]
                     }
                 }
             }
@@ -73,13 +76,13 @@ def update_graph(dd_menu_value):
 def update_table(dd_menu_value):
     return [
         dash_table.DataTable(
-                id='hana_raw_data',
-                data = df[df['QUERY_RAW_PHRASE']==dd_menu_value].to_dict('records'),
-                columns=[{"name": i, "id": i} for i in df.columns],
-                page_size=10,
-                filter_action='native',
-                sort_action="native",
-            )
+            id='hana_raw_data',
+            data = df[df['QUERY_RAW_PHRASE']==dd_menu_value].to_dict('records'),
+            columns=[{"name": i, "id": i} for i in df.columns],
+            page_size=10,
+            filter_action='native',
+            sort_action="native",
+        )
     ]
 
 if __name__ == "__main__":
