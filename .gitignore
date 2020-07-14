@@ -5,7 +5,6 @@ venv
 /__pycache__
 /plot_venv
 .vscode
-hana_search.csv
 encry.py
 get_data.py
 wsgi.py
