@@ -1,4 +1,6 @@
 import pandas as pd
+import os
+import time
 import dash
 import dash_table
 import dash_core_components as dcc
@@ -6,6 +8,8 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 
+file_time_class = os.stat('hana_search.csv')
+file_time = time.asctime(time.localtime(file_time_class.st_mtime))
 df = pd.read_csv('hana_search.csv')
 df3 = pd.read_csv('hana_search.csv').groupby(['DATE','QUERY_RAW_PHRASE']).agg(
     min_logtime=('LOG_TIME',min),
@@ -36,7 +40,7 @@ app.layout = html.Div(children=[
                     width='50%',
                     verticalAlign='left'
             )),
-            html.Button('Refresh',id='refresh_button')
+            html.Button('Refresh',id='refresh_button'),
     ],id='dd_div'),
     html.Div(id='search-time-graph-div'),
     html.Div(id='search-time-date-slider'),
@@ -63,7 +67,7 @@ def update_graph(dd_menu_value, value):
                     {'x': ddf['DATE'], 'y': ddf['max_logtime'], 'type': 'line' , 'name': 'Max', 'visible': 'legendonly'}
                 ],
                 'layout': {
-                    'title': f'Czas wyszukiwania {dd_menu_value}',
+                    'title': f'Czas wyszukiwania {dd_menu_value}, {file_time}',
                     'yaxis':{
                         'range': [yax]
                     }
@@ -99,6 +103,10 @@ def refresher(value):
         min_logtime=('LOG_TIME',min),
         max_logtime=('LOG_TIME',max),
         mean_logtime=('LOG_TIME',"mean")).reset_index()
+    global file_time_class
+    file_time_class = os.stat('hana_search.csv')
+    global file_time
+    file_time = time.asctime(time.localtime(file_time_class.st_mtime))
     
 
 if __name__ == "__main__":

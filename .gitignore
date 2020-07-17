@@ -8,3 +8,4 @@ venv
 encry.py
 get_data.py
 wsgi.py
+hana_search.csv
