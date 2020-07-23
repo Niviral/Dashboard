@@ -95,7 +95,8 @@ def update_table(dd_menu_value,value):
             style_data={
                 'whiteSpace': 'normal',
                 'height': '13px',
-                'lineHeight': '15px'
+                'lineHeight': '13px',
+                'padding' : '0px'
             }
         )
     ]
