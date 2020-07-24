@@ -40,7 +40,7 @@ app.layout = html.Div(children=[
             display = 'table-cell',
         )),
         html.Div([
-            html.Button('Refresh',id='refresh_button'),
+            html.Button(f'{file_time}',id='refresh_button'),
         ],
         style=dict(
             width='30%',
@@ -51,7 +51,14 @@ app.layout = html.Div(children=[
     html.Div(id='search-time-date-slider'),
     html.Div(id='search-time-dt-div'),
     html.Div(id='tricky-div', style={'display': 'none'}),
-])
+],
+style=dict(
+    width='98%',
+    height='99%',
+    overflowX='hidden',
+    scroll='no'
+
+))
 
 @app.callback(
     Output('search-time-graph-div','children'),
@@ -71,7 +78,7 @@ def update_graph(dd_menu_value, value):
                     {'x': ddf['DATE'], 'y': ddf['max_logtime'], 'type': 'line' , 'name': 'Max', 'visible': 'legendonly'}
                 ],
                 'layout': {
-                    'title': f'Czas wyszukiwania {dd_menu_value}, {file_time}',
+                    'title': f'Czas wyszukiwania {dd_menu_value}'
                 }
             }
             )
@@ -88,7 +95,9 @@ def update_table(dd_menu_value,value):
             data = df[df['QUERY_RAW_PHRASE']==dd_menu_value].to_dict('records'),
             columns=[{"name": i, "id": i} for i in df.columns],
             fixed_rows={'headers':True},
-            style_table={"height": "400px","overflowY":"auto"},
+            style_table=dict(
+                height='40vh',
+                overflowY='auto'),
             page_size=50,
             filter_action='native',
             sort_action='native',
@@ -119,6 +128,6 @@ def refresher(value):
     
 
 if __name__ == "__main__":
-    app.run_server(host='0.0.0.0', port='8000',debug=True)
+    app.run_server(host='0.0.0.0', port='8100',debug=True)
 
 
