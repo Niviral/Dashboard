@@ -18,6 +18,8 @@ df3 = pd.read_csv('hana_search.csv').groupby(['DATE','QUERY_RAW_PHRASE']).agg(
     mean_logtime=('LOG_TIME',"mean")).reset_index()
 
 
+
+
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__ ,external_stylesheets=external_stylesheets)
@@ -67,15 +69,18 @@ style=dict(
 
 def update_graph(dd_menu_value, value):
     ddf = df3[df3['QUERY_RAW_PHRASE']==dd_menu_value]
-
+    ddf = ddf.set_index('DATE')
+    ddf.index = pd.to_datetime(ddf.index)
+    ddf = ddf.asfreq('D').assign(QUERY_RAW_PHRASE=lambda x: x['QUERY_RAW_PHRASE'].ffill())
     return [
         dcc.Graph(
             id='search-time-graph',
             figure={
                 'data': [
-                    {'x': ddf['DATE'], 'y': ddf['mean_logtime'], 'type': 'line' , 'name': 'Avg'},
-                    {'x': ddf['DATE'], 'y': ddf['min_logtime'], 'type': 'line' , 'name': 'Min'},
-                    {'x': ddf['DATE'], 'y': ddf['max_logtime'], 'type': 'line' , 'name': 'Max', 'visible': 'legendonly'}
+                    {'x': ddf.index, 'y': ddf['mean_logtime'], 'type': 'line' , 'name': 'Avg', 'connectgaps': False},
+                    {'x': ddf.index, 'y': ddf['min_logtime'], 'type': 'line' , 'name': 'Min', 'connectgaps': False},
+                    {'x': ddf.index, 'y': ddf['max_logtime'], 'type': 'line' , 'name': 'Max', 'visible': 'legendonly', 'connectgaps': False},
+                
                 ],
                 'layout': {
                     'title': f'Czas wyszukiwania {dd_menu_value}'
