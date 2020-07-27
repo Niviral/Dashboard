@@ -42,6 +42,19 @@ app.layout = html.Div(children=[
             display = 'table-cell',
         )),
         html.Div([
+            dcc.Dropdown(
+                id='dd_type',
+                options=[
+                {'label': 'dzienne' , 'value': 'Dzienne'},
+                {'label': 'godzinowe', 'value': 'Godzinowe'}],
+                value = 'Dzienne',
+            )
+        ],
+        style=dict(
+            width='68%',
+            display = 'table-cell',
+        )),
+        html.Div([
             html.Button(f'{file_time}',id='refresh_button'),
         ],
         style=dict(
