@@ -106,13 +106,13 @@ def update_table(dd_menu_value,value):
 
 def refresher(value):
     global df
-    df = pd.read_csv('hana_search.csv')
+    df = pd.read_csv(os.environ['DASH_FILE_NAME'])
     global df3 
-    df3 = pd.read_csv('hana_search.csv').groupby(['DATE','QUERY_RAW_PHRASE']).agg(
+    df3 = pd.read_csv(os.environ['DASH_FILE_NAME']).groupby(['DATE','QUERY_RAW_PHRASE']).agg(
         min_logtime=('LOG_TIME',min),
         max_logtime=('LOG_TIME',max),
         mean_logtime=('LOG_TIME',"mean")).reset_index()
     global file_time_class
-    file_time_class = os.stat('hana_search.csv')
+    file_time_class = os.stat(os.environ['DASH_FILE_NAME'])
     global file_time
     file_time = time.asctime(time.localtime(file_time_class.st_mtime))

@@ -7,7 +7,7 @@ and set up enviromental variable to provide app with file name: <br>
     For linux `export DASH_FILE_NAME='filename.csv'`<br>
     For Windows Power Shell `Set-Variable -Name DASH_FILE_NAME -value 'filename.csv'`<br>
 Data fille reqirements:
-| DATE       | LOG_TIME | QUERY_RAW_PHRASE | LOG_TIME |
+| DATE       | TIME     | QUERY_RAW_PHRASE | LOG_TIME |
 |------------|----------|------------------|----------|
 | 2020-07-27 | 10:30:03 | FOO              | 20       |
 | 2020-07-27 | 10:15:02 | FOO              | 15       |
