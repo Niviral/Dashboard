@@ -16,16 +16,13 @@ df3 = pd.read_csv('hana_search.csv').groupby(['DATE','QUERY_RAW_PHRASE']).agg(
     min_logtime=('LOG_TIME',min),
     max_logtime=('LOG_TIME',max),
     mean_logtime=('LOG_TIME',"mean")).reset_index()
-
-
+phrase = df3['QUERY_RAW_PHRASE'].unique()
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__ ,external_stylesheets=external_stylesheets)
 server = app.server
-
-phrase = df3['QUERY_RAW_PHRASE'].unique()
 
 app.layout = html.Div(children=[
     html.Div([
