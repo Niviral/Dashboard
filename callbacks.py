@@ -1,12 +1,11 @@
-import pandas as pd
 import os
-import time
-import dash
+import pandas as pd
 import dash_table
-import dash_core_components as dcc
-import dash_html_components as html
-import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
+import dash_core_components as dcc
+import time
+
+from app import app
 
 date_format='%d-%m-%Y %H:%M'
 file_time_class = os.stat('hana_search.csv')
@@ -16,70 +15,25 @@ df3 = pd.read_csv('hana_search.csv').groupby(['DATE','QUERY_RAW_PHRASE']).agg(
     min_logtime=('LOG_TIME',min),
     max_logtime=('LOG_TIME',max),
     mean_logtime=('LOG_TIME',"mean")).reset_index()
-phrase = df3['QUERY_RAW_PHRASE'].unique()
 
+@app.callback(
+    Output('phrase_dd_menu','options'),
+    [Input('none','children')])
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+def retrun_phrase_dd(none):
+    phrase = df3['QUERY_RAW_PHRASE'].unique()
+    for unique_phrase in phrase: 
+        yield [{'label': unique_phrase, 'value': unique_phrase}]
 
-app = dash.Dash(__name__ ,external_stylesheets=external_stylesheets)
-server = app.server
-
-app.layout = html.Div(children=[
-    html.Div([
-        html.Div([
-            dcc.Dropdown(
-                id='dd_menu',
-                options=[
-                {'label': unique_phrase, 'value': unique_phrase} for unique_phrase in phrase],
-                value = 'kabel',
-            )
-        ],
-        style=dict(
-            width='68%',
-            display = 'table-cell',
-        )),
-        html.Div([
-            dcc.Dropdown(
-                id='dd_type',
-                options=[
-                {'label': 'dzienne' , 'value': 'Dzienne'},
-                {'label': 'godzinowe', 'value': 'Godzinowe'}],
-                value = 'Dzienne',
-            )
-        ],
-        style=dict(
-            width='68%',
-            display = 'table-cell',
-        )),
-        html.Div([
-            html.Button(f'{file_time}',id='refresh_button'),
-        ],
-        style=dict(
-            width='30%',
-            display = 'table-cell',
-        )),
-    ],id='dd_div'),
-    html.Div(id='search-time-graph-div'),
-    html.Div(id='search-time-date-slider'),
-    html.Div(id='search-time-dt-div'),
-    html.Div(id='tricky-div', style={'display': 'none'}),
-],
-style=dict(
-    width='98%',
-    height='99%',
-    overflowX='hidden',
-    scroll='no'
-
-))
 
 @app.callback(
     Output('search-time-graph-div','children'),
-    [Input('dd_menu', 'value'),
+    [Input('phrase_dd_menu', 'value'),
     Input('tricky-div','children'),
-    Input('dd_type','value')])
+    Input('type_dd_menu','value')])
 
 def update_graph(dd_menu_value, phrase_value,type_value):
-    if type_value == 'Dzienne': 
+    if type_value == 'daily': 
         ddf = df3[df3['QUERY_RAW_PHRASE']==dd_menu_value]
         ddf = ddf.set_index('DATE')
         ddf.index = pd.to_datetime(ddf.index)
@@ -100,7 +54,7 @@ def update_graph(dd_menu_value, phrase_value,type_value):
                 }
                 )
         ]
-    else: 
+    elif type_value =='15-min': 
         ddf = df[df['QUERY_RAW_PHRASE']==dd_menu_value]
         ddf['DATE_TIME'] = ddf['DATE'] +' '+ ddf['TIME']
         ddf = ddf.drop(['DATE','TIME'], axis=1)
@@ -118,10 +72,11 @@ def update_graph(dd_menu_value, phrase_value,type_value):
                 }
                 )
         ]
-
+    else:
+        pass
 @app.callback(
     Output('search-time-dt-div','children'),
-    [Input('dd_menu', 'value'),
+    [Input('phrase_dd_menu', 'value'),
     Input('tricky-div','children')])
 
 def update_table(dd_menu_value,value):
@@ -149,6 +104,7 @@ def update_table(dd_menu_value,value):
 @app.callback(
     Output('tricky-div','children'),
     [Input('refresh_button','n_clicks')])
+
 def refresher(value):
     global df
     df = pd.read_csv('hana_search.csv')
@@ -161,9 +117,3 @@ def refresher(value):
     file_time_class = os.stat('hana_search.csv')
     global file_time
     file_time = time.asctime(time.localtime(file_time_class.st_mtime))
-    
-
-if __name__ == "__main__":
-    app.run_server(host='0.0.0.0', port='8100',debug=True)
-
-
