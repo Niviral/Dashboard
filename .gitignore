@@ -1,11 +1,10 @@
 venv
 *.pyc
+*.csv
 .DS_Store
 .env
-/__pycache__
-/plot_venv
 .vscode
+__pycache__
+plot_venv
 encry.py
 get_data.py
-wsgi.py
-hana_search.csv

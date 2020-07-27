@@ -1,17 +1,16 @@
 import os
-import pandas as pd
-import dash_table
-from dash.dependencies import Input, Output
-import dash_core_components as dcc
 import time
-
+import dash_table
+import pandas as pd
+import dash_core_components as dcc
+from dash.dependencies import Input, Output
 from app import app
 
 date_format='%d-%m-%Y %H:%M'
-file_time_class = os.stat('hana_search.csv')
+file_time_class = os.stat(os.environ['DASH_FILE_NAME'])
 file_time = time.strftime(date_format,time.localtime(file_time_class.st_mtime))
-df = pd.read_csv('hana_search.csv')
-df3 = pd.read_csv('hana_search.csv').groupby(['DATE','QUERY_RAW_PHRASE']).agg(
+df = pd.read_csv(os.environ['DASH_FILE_NAME'])
+df3 = pd.read_csv(os.environ['DASH_FILE_NAME']).groupby(['DATE','QUERY_RAW_PHRASE']).agg(
     min_logtime=('LOG_TIME',min),
     max_logtime=('LOG_TIME',max),
     mean_logtime=('LOG_TIME',"mean")).reset_index()
