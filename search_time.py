@@ -65,29 +65,50 @@ style=dict(
 @app.callback(
     Output('search-time-graph-div','children'),
     [Input('dd_menu', 'value'),
-    Input('tricky-div','children')])
+    Input('tricky-div','children'),
+    Input('dd_type','value')])
 
-def update_graph(dd_menu_value, value):
-    ddf = df3[df3['QUERY_RAW_PHRASE']==dd_menu_value]
-    ddf = ddf.set_index('DATE')
-    ddf.index = pd.to_datetime(ddf.index)
-    ddf = ddf.asfreq('D').assign(QUERY_RAW_PHRASE=lambda x: x['QUERY_RAW_PHRASE'].ffill())
-    return [
-        dcc.Graph(
-            id='search-time-graph',
-            figure={
-                'data': [
-                    {'x': ddf.index, 'y': ddf['mean_logtime'], 'type': 'line' , 'name': 'Avg', 'connectgaps': False},
-                    {'x': ddf.index, 'y': ddf['min_logtime'], 'type': 'line' , 'name': 'Min', 'connectgaps': False},
-                    {'x': ddf.index, 'y': ddf['max_logtime'], 'type': 'line' , 'name': 'Max', 'visible': 'legendonly', 'connectgaps': False},
-                
-                ],
-                'layout': {
-                    'title': f'Czas wyszukiwania {dd_menu_value}'
+def update_graph(dd_menu_value, phrase_value,type_value):
+    if type_value == 'Dzienne': 
+        ddf = df3[df3['QUERY_RAW_PHRASE']==dd_menu_value]
+        ddf = ddf.set_index('DATE')
+        ddf.index = pd.to_datetime(ddf.index)
+        ddf = ddf.asfreq('D').assign(QUERY_RAW_PHRASE=lambda x: x['QUERY_RAW_PHRASE'].ffill())
+        return [
+            dcc.Graph(
+                id='search-time-graph',
+                figure={
+                    'data': [
+                        {'x': ddf.index, 'y': ddf['mean_logtime'], 'type': 'line' , 'name': 'Avg', 'connectgaps': False},
+                        {'x': ddf.index, 'y': ddf['min_logtime'], 'type': 'line' , 'name': 'Min', 'connectgaps': False},
+                        {'x': ddf.index, 'y': ddf['max_logtime'], 'type': 'line' , 'name': 'Max', 'visible': 'legendonly', 'connectgaps': False},
+                    
+                    ],
+                    'layout': {
+                        'title': f'Czas wyszukiwania {dd_menu_value}'
+                    }
                 }
-            }
-            )
-    ]
+                )
+        ]
+    else: 
+        ddf = df[df['QUERY_RAW_PHRASE']==dd_menu_value]
+        ddf['DATE_TIME'] = ddf['DATE'] +' '+ ddf['TIME']
+        ddf = ddf.drop(['DATE','TIME'], axis=1)
+        pd.to_datetime(ddf['DATE_TIME'])
+        return [
+            dcc.Graph(
+                id='search-time-graph',
+                figure={
+                    'data': [
+                        {'x': ddf['DATE_TIME'], 'y': ddf['LOG_TIME'], 'type': 'line' , 'name': 'Log time', 'connectgaps': False},
+                    ],
+                    'layout': {
+                        'title': f'Czas wyszukiwania {dd_menu_value}'
+                    }
+                }
+                )
+        ]
+
 @app.callback(
     Output('search-time-dt-div','children'),
     [Input('dd_menu', 'value'),
