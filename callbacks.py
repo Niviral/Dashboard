@@ -23,8 +23,6 @@ def retrun_phrase_dd(vla):
     phrases = df3['QUERY_RAW_PHRASE'].unique()
     return [{'label':uniq_phrase, 'value':uniq_phrase} for uniq_phrase in phrases ]
         
-
-
 @app.callback(
     Output('search-time-graph-div','children'),
     [Input('phrase_dd_menu', 'value'),
