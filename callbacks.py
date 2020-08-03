@@ -45,13 +45,12 @@ def update_graph(dd_menu_value, phrase_value,type_value):
                         {'x': ddf.index, 'y': ddf['mean_logtime'], 'type': 'line' , 'name': 'Avg', 'connectgaps': False},
                         {'x': ddf.index, 'y': ddf['min_logtime'], 'type': 'line' , 'name': 'Min', 'connectgaps': False},
                         {'x': ddf.index, 'y': ddf['max_logtime'], 'type': 'line' , 'name': 'Max', 'visible': 'legendonly', 'connectgaps': False},
-                    
                     ],
                     'layout': {
                         'title': f'Czas wyszukiwania {dd_menu_value}'
                     }
                 }
-                )
+            )
         ]
     elif type_value =='15-min': 
         ddf = df[df['QUERY_RAW_PHRASE']==dd_menu_value]
@@ -69,10 +68,11 @@ def update_graph(dd_menu_value, phrase_value,type_value):
                         'title': f'Czas wyszukiwania {dd_menu_value}'
                     }
                 }
-                )
+            )
         ]
     else:
         pass
+
 @app.callback(
     Output('search-time-dt-div','children'),
     [Input('phrase_dd_menu', 'value'),
@@ -99,20 +99,3 @@ def update_table(dd_menu_value,value):
             }
         )
     ]
-
-@app.callback(
-    Output('tricky-div','children'),
-    [Input('refresh_button','n_clicks')])
-
-def refresher(value):
-    global df
-    df = pd.read_csv(os.environ['DASH_FILE_NAME'])
-    global df3 
-    df3 = pd.read_csv(os.environ['DASH_FILE_NAME']).groupby(['DATE','QUERY_RAW_PHRASE']).agg(
-        min_logtime=('LOG_TIME',min),
-        max_logtime=('LOG_TIME',max),
-        mean_logtime=('LOG_TIME',"mean")).reset_index()
-    global file_time_class
-    file_time_class = os.stat(os.environ['DASH_FILE_NAME'])
-    global file_time
-    file_time = time.asctime(time.localtime(file_time_class.st_mtime))

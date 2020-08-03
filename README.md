@@ -1,5 +1,5 @@
 # Dashboard
-#Python 3.8.2
+#Python 3.8.2<br>
 Simple dashboard created with [Dash](https://plotly.com/dash/)<br>
 To set up dashboard install requirements:<br>
     `pip3 install -r requirements.txt`<br>

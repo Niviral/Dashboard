@@ -12,8 +12,9 @@ layout = html.Div([
             )],
         id='phrase-dropdown-div',
         style=dict(
-            width='68%',
+            width='40vw',
             display = 'table-cell',
+            left=0
         )),
         html.Div([
             dcc.Dropdown(
@@ -25,17 +26,11 @@ layout = html.Div([
             )],
         id='type-dropdown-div',
         style=dict(
-            width='68%',
+            width='20vw',
             display = 'table-cell',
-        )),
-        html.Div([
-            html.Button('Jest aktualne',id='refresh_button'),
-        ],
-        style=dict(
-            width='30%',
-            display = 'table-cell',
-        )),
-    ],id='dd_div'),
+            right=True,
+        ))
+    ],id='nav-bar-div'),
     html.Div(id='search-time-graph-div'),
     html.Div(id='search-time-date-slider'),
     html.Div(id='search-time-dt-div'),
