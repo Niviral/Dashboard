@@ -19,19 +19,19 @@ df3 = pd.read_csv(os.environ['DASH_FILE_NAME']).groupby(['DATE','QUERY_RAW_PHRAS
     Output('phrase_dd_menu','options'),
     [Input('type_dd_menu','value')])
 
-def retrun_phrase_dd(vla):
+def retrun_phrase_dd(type_value):
     phrases = df3['QUERY_RAW_PHRASE'].unique()
     return [{'label':uniq_phrase, 'value':uniq_phrase} for uniq_phrase in phrases ]
         
 @app.callback(
     Output('search-time-graph-div','children'),
     [Input('phrase_dd_menu', 'value'),
-    Input('tricky-div','children'),
-    Input('type_dd_menu','value')])
+    Input('type_dd_menu','value'),
+    Input('global-interval','n_intervals')])
 
-def update_graph(dd_menu_value, phrase_value,type_value):
+def update_graph(phrase_value,type_value,n):
     if type_value == 'daily': 
-        ddf = df3[df3['QUERY_RAW_PHRASE']==dd_menu_value]
+        ddf = df3[df3['QUERY_RAW_PHRASE']==phrase_value]
         ddf = ddf.set_index('DATE')
         ddf.index = pd.to_datetime(ddf.index)
         ddf = ddf.asfreq('D').assign(QUERY_RAW_PHRASE=lambda x: x['QUERY_RAW_PHRASE'].ffill())
@@ -46,13 +46,13 @@ def update_graph(dd_menu_value, phrase_value,type_value):
                     
                     ],
                     'layout': {
-                        'title': f'Czas wyszukiwania {dd_menu_value}'
+                        'title': f'Czas wyszukiwania {phrase_value} - {file_time}'
                     }
                 }
                 )
         ]
     elif type_value =='15-min': 
-        ddf = df[df['QUERY_RAW_PHRASE']==dd_menu_value]
+        ddf = df[df['QUERY_RAW_PHRASE']==phrase_value]
         ddf['DATE_TIME'] = ddf['DATE'] +' '+ ddf['TIME']
         ddf = ddf.drop(['DATE','TIME'], axis=1)
         pd.to_datetime(ddf['DATE_TIME'])
@@ -64,7 +64,7 @@ def update_graph(dd_menu_value, phrase_value,type_value):
                         {'x': ddf['DATE_TIME'], 'y': ddf['LOG_TIME'], 'type': 'line' , 'name': 'Log time', 'connectgaps': False},
                     ],
                     'layout': {
-                        'title': f'Czas wyszukiwania {dd_menu_value}'
+                        'title': f'Czas wyszukiwania {phrase_value}, - {file_time}'
                     }
                 }
                 )
@@ -74,9 +74,9 @@ def update_graph(dd_menu_value, phrase_value,type_value):
 @app.callback(
     Output('search-time-dt-div','children'),
     [Input('phrase_dd_menu', 'value'),
-    Input('tricky-div','children')])
+    Input('global-interval','n_intervals')])
 
-def update_table(dd_menu_value,value):
+def update_table(dd_menu_value,n):
     return [
         dash_table.DataTable(
             id='hana_raw_data',
@@ -100,17 +100,13 @@ def update_table(dd_menu_value,value):
 
 @app.callback(
     Output('tricky-div','children'),
-    [Input('refresh_button','n_clicks')])
+    [Input('global-interval','n_intervals')])
 
-def refresher(value):
-    global df
+def refresher(n):
     df = pd.read_csv(os.environ['DASH_FILE_NAME'])
-    global df3 
     df3 = pd.read_csv(os.environ['DASH_FILE_NAME']).groupby(['DATE','QUERY_RAW_PHRASE']).agg(
         min_logtime=('LOG_TIME',min),
         max_logtime=('LOG_TIME',max),
         mean_logtime=('LOG_TIME',"mean")).reset_index()
-    global file_time_class
     file_time_class = os.stat(os.environ['DASH_FILE_NAME'])
-    global file_time
     file_time = time.asctime(time.localtime(file_time_class.st_mtime))
