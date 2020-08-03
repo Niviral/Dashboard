@@ -17,14 +17,12 @@ df3 = pd.read_csv(os.environ['DASH_FILE_NAME']).groupby(['DATE','QUERY_RAW_PHRAS
 
 @app.callback(
     Output('phrase_dd_menu','options'),
-    [Input('none','children')])
+    [Input('type_dd_menu','value')])
 
-def retrun_phrase_dd(none):
-    phrase = df3['QUERY_RAW_PHRASE'].unique()
-    for unique_phrase in phrase: 
-        yield [{'label': unique_phrase, 'value': unique_phrase}]
-
-
+def retrun_phrase_dd(vla):
+    phrases = df3['QUERY_RAW_PHRASE'].unique()
+    return [{'label':uniq_phrase, 'value':uniq_phrase} for uniq_phrase in phrases ]
+        
 @app.callback(
     Output('search-time-graph-div','children'),
     [Input('phrase_dd_menu', 'value'),
