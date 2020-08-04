@@ -7,8 +7,7 @@ layout = html.Div([
         html.Div([
             dcc.Dropdown(
             id='phrase_dd_menu',
-            options=[],
-            value = 'kabel',
+            options=[]
             )],
         id='phrase-dropdown-div',
         style=dict(
