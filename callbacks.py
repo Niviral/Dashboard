@@ -96,9 +96,6 @@ def update_table(dd_menu_value,n):
                 'padding' : '0px'
             }
         )
-<<<<<<< HEAD
-    ]
-=======
     ]
 
 @app.callback(
@@ -113,4 +110,3 @@ def refresher(n):
         mean_logtime=('LOG_TIME',"mean")).reset_index()
     file_time_class = os.stat(os.environ['DASH_FILE_NAME'])
     file_time = time.asctime(time.localtime(file_time_class.st_mtime))
->>>>>>> 93748199de5475a27a78f0922a145f4bc20bbf84
