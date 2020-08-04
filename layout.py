@@ -13,6 +13,7 @@ layout = html.Div([
         id='phrase-dropdown-div',
         style=dict(
             width='25vw',
+            border='10px',
             display = 'table-cell',
         )),
         html.Div([
@@ -26,12 +27,31 @@ layout = html.Div([
         id='type-dropdown-div',
         style=dict(
             width='25vw',
+            border='10px',
             display = 'table-cell',
         ))
     ],id='dd_div'),
-    html.Div(id='search-time-graph-div'),
-    html.Div(id='search-time-date-slider'),
-    html.Div(id='search-time-dt-div'),
+    html.Div(
+        id='search-time-graph-div',
+        style=dict(
+            height='450px',
+            width='98vw'
+        )
+    ),
+    html.Div(
+        id='search-time-date-slider',
+        style=dict(
+            height='1,5vh',
+            width='98vw'
+        )
+    ),
+    html.Div(
+        id='search-time-dt-div',
+        style=dict(
+            height='45vh',
+            width='98vw'
+        )
+    ),
     html.Div([
         dcc.Interval(
             id='global-interval',
@@ -44,8 +64,9 @@ layout = html.Div([
     html.Div(id='tricky-div', style={'display': 'none'}),
 ],
 style=dict(
-    width='98%',
-    height='99%',
-    overflowX='hidden',
+    width='99vw',
+    height='99vh',
+    padding='0,5vw',
+    overflow='hidden',
     scroll='no'
 ))

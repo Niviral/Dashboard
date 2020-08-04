@@ -91,13 +91,14 @@ def update_table(dd_menu_value,n):
             sort_action='native',
             style_data={
                 'whiteSpace': 'normal',
-                'height': '13px',
-                'lineHeight': '13px',
+                'height': '15px',
+                'lineHeight': '15px',
                 'padding' : '0px'
             }
         )
     ]
-
+ 
+### \/ THIS NEED TO BE FIXED ###
 @app.callback(
     Output('tricky-div','children'),
     [Input('global-interval','n_intervals')])
