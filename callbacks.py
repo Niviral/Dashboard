@@ -15,14 +15,17 @@ df3 = pd.read_csv(os.environ['DASH_FILE_NAME']).groupby(['DATE','QUERY_RAW_PHRAS
     max_logtime=('LOG_TIME',max),
     mean_logtime=('LOG_TIME',"mean")).reset_index()
 
-@app.callback(
+@app.callback([
     Output('phrase_dd_menu','options'),
+    Output('phrase_dd_menu','value')],
     [Input('type_dd_menu','value')])
 
 def retrun_phrase_dd(type_value):
     phrases = df3['QUERY_RAW_PHRASE'].unique()
-    return [{'label':uniq_phrase, 'value':uniq_phrase} for uniq_phrase in phrases ]
-        
+    options=[{'label':uniq_phrase, 'value':uniq_phrase} for uniq_phrase in phrases]
+    value=phrases[0]
+    return options, value
+
 @app.callback(
     Output('search-time-graph-div','children'),
     [Input('phrase_dd_menu', 'value'),
@@ -45,7 +48,7 @@ def update_graph(phrase_value,type_value,n):
                         {'x': ddf.index, 'y': ddf['max_logtime'], 'type': 'line' , 'name': 'Max', 'visible': 'legendonly', 'connectgaps': False},
                     ],
                     'layout': {
-                        'title': f'Czas wyszukiwania {phrase_value} - {file_time}'
+                        'title': f'Czas wyszukiwania {phrase_value}, - {file_time}'
                     }
                 }
             )
@@ -91,13 +94,14 @@ def update_table(dd_menu_value,n):
             sort_action='native',
             style_data={
                 'whiteSpace': 'normal',
-                'height': '13px',
-                'lineHeight': '13px',
+                'height': '15px',
+                'lineHeight': '15px',
                 'padding' : '0px'
             }
         )
     ]
-
+ 
+### \/ THIS NEED TO BE FIXED ###
 @app.callback(
     Output('tricky-div','children'),
     [Input('global-interval','n_intervals')])
