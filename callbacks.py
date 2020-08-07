@@ -6,14 +6,16 @@ import dash_core_components as dcc
 from dash.dependencies import Input, Output
 from app import app
 
-date_format='%d-%m-%Y %H:%M'
-file_time_class = os.stat(os.environ['DASH_FILE_NAME'])
-file_time = time.strftime(date_format,time.localtime(file_time_class.st_mtime))
-df = pd.read_csv(os.environ['DASH_FILE_NAME'])
-df3 = pd.read_csv(os.environ['DASH_FILE_NAME']).groupby(['DATE','QUERY_RAW_PHRASE']).agg(
-    min_logtime=('LOG_TIME',min),
-    max_logtime=('LOG_TIME',max),
-    mean_logtime=('LOG_TIME',"mean")).reset_index()
+def refresher():
+    date_format='%d-%m-%Y %H:%M'
+    file_time_class = os.stat(os.environ['DASH_FILE_NAME'])
+    file_time = time.strftime(date_format,time.localtime(file_time_class.st_mtime))
+    df = pd.read_csv(os.environ['DASH_FILE_NAME'])
+    df3 = pd.read_csv(os.environ['DASH_FILE_NAME']).groupby(['DATE','QUERY_RAW_PHRASE']).agg(
+        min_logtime=('LOG_TIME',min),
+        max_logtime=('LOG_TIME',max),
+        mean_logtime=('LOG_TIME',"mean")).reset_index()
+    return date_format, file_time, df, df3
 
 @app.callback([
     Output('phrase_dd_menu','options'),
@@ -21,6 +23,7 @@ df3 = pd.read_csv(os.environ['DASH_FILE_NAME']).groupby(['DATE','QUERY_RAW_PHRAS
     [Input('type_dd_menu','value')])
 
 def retrun_phrase_dd(type_value):
+    date_format, file_time, df, df3 = refresher()
     phrases = df3['QUERY_RAW_PHRASE'].unique()
     options=[{'label':uniq_phrase, 'value':uniq_phrase} for uniq_phrase in phrases]
     value=phrases[0]
@@ -33,6 +36,7 @@ def retrun_phrase_dd(type_value):
     Input('global-interval','n_intervals')])
 
 def update_graph(phrase_value,type_value,n):
+    date_format, file_time, df, df3 = refresher()
     if type_value == 'daily': 
         ddf = df3[df3['QUERY_RAW_PHRASE']==phrase_value]
         ddf = ddf.set_index('DATE')
@@ -53,7 +57,8 @@ def update_graph(phrase_value,type_value,n):
                 }
             )
         ]
-    elif type_value =='15-min': 
+    elif type_value =='15-min':
+        date_format, file_time, df, df3 = refresher()
         ddf = df[df['QUERY_RAW_PHRASE']==phrase_value]
         ddf['DATE_TIME'] = ddf['DATE'] +' '+ ddf['TIME']
         ddf = ddf.drop(['DATE','TIME'], axis=1)
@@ -80,6 +85,7 @@ def update_graph(phrase_value,type_value,n):
     Input('global-interval','n_intervals')])
 
 def update_table(dd_menu_value,n):
+    date_format, file_time, df, df3 = refresher()
     return [
         dash_table.DataTable(
             id='hana_raw_data',
@@ -100,17 +106,4 @@ def update_table(dd_menu_value,n):
             }
         )
     ]
- 
-### \/ THIS NEED TO BE FIXED ###
-@app.callback(
-    Output('tricky-div','children'),
-    [Input('global-interval','n_intervals')])
-
-def refresher(n):
-    df = pd.read_csv(os.environ['DASH_FILE_NAME'])
-    df3 = pd.read_csv(os.environ['DASH_FILE_NAME']).groupby(['DATE','QUERY_RAW_PHRASE']).agg(
-        min_logtime=('LOG_TIME',min),
-        max_logtime=('LOG_TIME',max),
-        mean_logtime=('LOG_TIME',"mean")).reset_index()
-    file_time_class = os.stat(os.environ['DASH_FILE_NAME'])
-    file_time = time.asctime(time.localtime(file_time_class.st_mtime))
+    
