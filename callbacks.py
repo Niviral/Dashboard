@@ -22,7 +22,7 @@ def refresher():
     Output('phrase_dd_menu','value')],
     [Input('type_dd_menu','value')])
 
-def retrun_phrase_dd(type_value):
+def return_phrase_dd(type_value):
     date_format, file_time, df, df3 = refresher()
     phrases = df3['QUERY_RAW_PHRASE'].unique()
     options=[{'label':uniq_phrase, 'value':uniq_phrase} for uniq_phrase in phrases]
