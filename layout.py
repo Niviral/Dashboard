@@ -7,42 +7,58 @@ layout = html.Div([
     html.Div([
         html.Div([
             dcc.Dropdown(
-            id='phrase_dd_menu',
-            options=[]
+                id='phrase_dd_menu',
+                options=[]
             )],
-        id='phrase-dropdown-div',
-        style=dict(
-            width='25vw',
-            border='10px',
-            display = 'table-cell',
-            left=0
+            id='phrase-dropdown-div',
+            style=dict(
+                width='25vw',
+                border='10px',
+                display = 'table-cell',
+                left=0
         )),
         html.Div([
             dcc.Dropdown(
-            id='type_dd_menu',
-            options=[
-            {'label': 'daily' , 'value': 'daily'},
-            {'label': '15-min', 'value': '15-min'}],
-            value = 'daily',
+                id='type_dd_menu',
+                options=[
+                    {'label': 'daily' , 'value': 'daily'},
+                    {'label': '15-min', 'value': '15-min'}],
+                value = 'daily',
             )],
-        id='type-dropdown-div',
-        style=dict(
-            width='25vw',
-            border='10px',
-            display = 'table-cell',
+            id='type-dropdown-div',
+            style=dict(
+                width='25vw',
+                border='10px',
+                display = 'table-cell',
         )),
         html.Div([
             dcc.DatePickerRange(
                 id='date-range-picker',
                 end_date=dt.datetime.today(),
-                start_date=dt.datetime.today()- dt.timedelta(days=30)
-            )
-        ],
-        id='date_picker_div',
-        style=dict(
-            width='25vw',
-            border='10px',
-            display = 'table-cell')),
+                start_date=dt.datetime.today()- dt.timedelta(days=60)
+            )],
+            id='date_picker_div',
+            style=dict(
+                width='25vw',
+                border='10px',
+                display = 'table-cell'
+        )),
+        html.Div([
+            dcc.RadioItems(
+                id='radio_graph_picker',
+                options=[
+                    {'label':'Bar Graph','value':'bar'},
+                    {'label':'Line Graph','value':'line'}
+                ],
+                value='bar',
+                labelStyle={'display': 'inline-block'}
+            )],
+            id='radio_item_div',
+            style=dict(
+                width='25vw',
+                border='10px',
+                display = 'table-cell'
+        )),
     ],id='dd_div'),
     html.Div(
         id='search-time-graph-div',

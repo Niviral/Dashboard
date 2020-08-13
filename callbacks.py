@@ -41,9 +41,10 @@ def return_phrase_dd(type_value):
     Input('type_dd_menu','value'),
     Input('global-interval','n_intervals'),
     Input('date-range-picker','end_date'),
-    Input('date-range-picker','start_date')])
+    Input('date-range-picker','start_date'),
+    Input('radio_graph_picker','value')])
 
-def update_graph(phrase_value,type_value,n,end_date,start_date):
+def update_graph(phrase_value,type_value,n,end_date,start_date,radio_graph_value):
     date_format, file_time, df, df3 = refresher()
     if type_value == 'daily': 
         ddf = df3[df3['QUERY_RAW_PHRASE'] == phrase_value]
@@ -56,9 +57,9 @@ def update_graph(phrase_value,type_value,n,end_date,start_date):
                 id='search-time-graph',
                 figure={
                     'data': [
-                        {'x': ddf.index, 'y': ddf['min_logtime'], 'type': 'bar' , 'name': 'Min','visible': 'legendonly', 'connectgaps': False,},
-                        {'x': ddf.index, 'y': ddf['mean_logtime'], 'type': 'bar' , 'name': 'Avg', 'connectgaps': False,},
-                        {'x': ddf.index, 'y': ddf['max_logtime'], 'type': 'bar' , 'name': 'Max', 'visible': 'legendonly', 'connectgaps': False},
+                        {'x': ddf.index, 'y': ddf['min_logtime'], 'type': radio_graph_value , 'name': 'Min','visible': 'legendonly', 'connectgaps': False,},
+                        {'x': ddf.index, 'y': ddf['mean_logtime'], 'type': radio_graph_value , 'name': 'Avg', 'connectgaps': False,},
+                        {'x': ddf.index, 'y': ddf['max_logtime'], 'type': radio_graph_value , 'name': 'Max', 'visible': 'legendonly', 'connectgaps': False},
                     ],
                     'layout': {
                         'title': f'Czas wyszukiwania {phrase_value}, - {file_time}',
@@ -79,7 +80,7 @@ def update_graph(phrase_value,type_value,n,end_date,start_date):
                 id='search-time-graph',
                 figure={
                     'data': [
-                        {'x': ddf['DATE_TIME'], 'y': ddf['LOG_TIME'], 'type': 'bar' , 'name': 'Log time', 'connectgaps': False},
+                        {'x': ddf['DATE_TIME'], 'y': ddf['LOG_TIME'], 'type': radio_graph_value , 'name': 'Log time', 'connectgaps': False},
                     ],
                     'layout': {
                         'title': f'Czas wyszukiwania {phrase_value}, - {file_time}'
