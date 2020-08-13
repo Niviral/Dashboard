@@ -1,3 +1,4 @@
+import datetime as dt
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
@@ -29,7 +30,19 @@ layout = html.Div([
             width='25vw',
             border='10px',
             display = 'table-cell',
-        ))
+        )),
+        html.Div([
+            dcc.DatePickerRange(
+                id='date-range-picker',
+                end_date=dt.datetime.today(),
+                start_date=dt.datetime.today()- dt.timedelta(days=30)
+            )
+        ],
+        id='date_picker_div',
+        style=dict(
+            width='25vw',
+            border='10px',
+            display = 'table-cell')),
     ],id='dd_div'),
     html.Div(
         id='search-time-graph-div',

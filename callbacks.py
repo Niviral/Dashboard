@@ -1,8 +1,10 @@
 import os
 import time
 import dash_table
+import datetime as dt
 import pandas as pd
 import dash_core_components as dcc
+import plotly.graph_objs as go 
 from dash.dependencies import Input, Output
 from app import app
 
@@ -29,38 +31,47 @@ def return_phrase_dd(type_value):
     value=phrases[0]
     return options, value
 
+# @app.callback([
+#     Output('date-range-picker','end_date'),
+# ])
+
 @app.callback(
     Output('search-time-graph-div','children'),
     [Input('phrase_dd_menu', 'value'),
     Input('type_dd_menu','value'),
-    Input('global-interval','n_intervals')])
+    Input('global-interval','n_intervals'),
+    Input('date-range-picker','end_date'),
+    Input('date-range-picker','start_date')])
 
-def update_graph(phrase_value,type_value,n):
+def update_graph(phrase_value,type_value,n,end_date,start_date):
     date_format, file_time, df, df3 = refresher()
     if type_value == 'daily': 
-        ddf = df3[df3['QUERY_RAW_PHRASE']==phrase_value]
+        ddf = df3[df3['QUERY_RAW_PHRASE'] == phrase_value]
         ddf = ddf.set_index('DATE')
         ddf.index = pd.to_datetime(ddf.index)
         ddf = ddf.asfreq('D').assign(QUERY_RAW_PHRASE=lambda x: x['QUERY_RAW_PHRASE'].ffill())
+        ddf = ddf.loc[start_date:end_date]
         return [
             dcc.Graph(
                 id='search-time-graph',
                 figure={
                     'data': [
-                        {'x': ddf.index, 'y': ddf['mean_logtime'], 'type': 'line' , 'name': 'Avg', 'connectgaps': False},
-                        {'x': ddf.index, 'y': ddf['min_logtime'], 'type': 'line' , 'name': 'Min', 'connectgaps': False},
-                        {'x': ddf.index, 'y': ddf['max_logtime'], 'type': 'line' , 'name': 'Max', 'visible': 'legendonly', 'connectgaps': False},
+                        {'x': ddf.index, 'y': ddf['min_logtime'], 'type': 'bar' , 'name': 'Min','visible': 'legendonly', 'connectgaps': False,},
+                        {'x': ddf.index, 'y': ddf['mean_logtime'], 'type': 'bar' , 'name': 'Avg', 'connectgaps': False,},
+                        {'x': ddf.index, 'y': ddf['max_logtime'], 'type': 'bar' , 'name': 'Max', 'visible': 'legendonly', 'connectgaps': False},
                     ],
                     'layout': {
-                        'title': f'Czas wyszukiwania {phrase_value}, - {file_time}'
-                    }
+                        'title': f'Czas wyszukiwania {phrase_value}, - {file_time}',
+                        # 'barmode':'relative'
+                        'bargap': 0.05
+                    },
                 }
             )
         ]
-    elif type_value =='15-min':
+    elif type_value == '15-min':
         date_format, file_time, df, df3 = refresher()
-        ddf = df[df['QUERY_RAW_PHRASE']==phrase_value]
-        ddf['DATE_TIME'] = ddf['DATE'] +' '+ ddf['TIME']
+        ddf = df[df['QUERY_RAW_PHRASE'] == phrase_value]
+        ddf['DATE_TIME'] = ddf['DATE'] + ' ' + ddf['TIME']
         ddf = ddf.drop(['DATE','TIME'], axis=1)
         pd.to_datetime(ddf['DATE_TIME'])
         return [
@@ -68,7 +79,7 @@ def update_graph(phrase_value,type_value,n):
                 id='search-time-graph',
                 figure={
                     'data': [
-                        {'x': ddf['DATE_TIME'], 'y': ddf['LOG_TIME'], 'type': 'line' , 'name': 'Log time', 'connectgaps': False},
+                        {'x': ddf['DATE_TIME'], 'y': ddf['LOG_TIME'], 'type': 'bar' , 'name': 'Log time', 'connectgaps': False},
                     ],
                     'layout': {
                         'title': f'Czas wyszukiwania {phrase_value}, - {file_time}'
@@ -89,7 +100,7 @@ def update_table(dd_menu_value,n):
     return [
         dash_table.DataTable(
             id='hana_raw_data',
-            data = df[df['QUERY_RAW_PHRASE']==dd_menu_value].to_dict('records'),
+            data = df[df['QUERY_RAW_PHRASE'] == dd_menu_value].to_dict('records'),
             columns=[{"name": i, "id": i} for i in df.columns],
             fixed_rows={'headers':True},
             style_table=dict(
