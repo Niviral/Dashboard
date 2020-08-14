@@ -31,10 +31,6 @@ def return_phrase_dd(type_value):
     value=phrases[0]
     return options, value
 
-# @app.callback([
-#     Output('date-range-picker','end_date'),
-# ])
-
 @app.callback(
     Output('search-time-graph-div','children'),
     [Input('phrase_dd_menu', 'value'),
