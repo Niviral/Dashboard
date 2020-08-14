@@ -63,8 +63,7 @@ def update_graph(phrase_value,type_value,n,end_date,start_date,radio_graph_value
                     ],
                     'layout': {
                         'title': f'Czas wyszukiwania {phrase_value}, - {file_time}',
-                        # 'barmode':'relative'
-                        'bargap': 0.01
+                        'bargap': 0.02
                     },
                 }
             )

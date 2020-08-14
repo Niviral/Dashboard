@@ -35,7 +35,7 @@ layout = html.Div([
             dcc.DatePickerRange(
                 id='date-range-picker',
                 end_date=dt.datetime.today(),
-                start_date=dt.datetime.today()- dt.timedelta(days=60)
+                start_date=dt.datetime.today() - dt.timedelta(days=60)
             )],
             id='date_picker_div',
             style=dict(
