@@ -5,7 +5,6 @@ To set up dashboard install requirements:<br>
     `pip3 install -r requirements.txt`<br>
 and set up enviromental variable to provide app with file name: <br>
     For linux `export DASH_FILE_NAME='filename.csv'`<br>
-    For Windows Power Shell `Set-Variable -Name DASH_FILE_NAME -value 'filename.csv'`<br>
 Data fille reqirements:
 | DATE       | TIME     | QUERY_RAW_PHRASE | LOG_TIME |
 |------------|----------|------------------|----------|
